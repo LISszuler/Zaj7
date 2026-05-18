@@ -1,4 +1,4 @@
-from src.models import Apartment, Bill, Parameters, Tenant, TenantSettlement, Transfer, ApartmentSettlement
+from src.models import Apartment, Bill, Parameters, Tenant, TenantSettlement, Transfer, ApartmentSettlement, BlacklistedTenant
 from typing import List, Tuple
 
 class Manager:
@@ -11,6 +11,7 @@ class Manager:
         self.bills = []
         self.transfer_min_pln = -10000.0
         self.transfer_max_pln = 10000.0
+        self.blacklisted_tenants = []
        
         self.load_data()
 
@@ -19,6 +20,7 @@ class Manager:
         self.tenants = Tenant.from_json_file(self.parameters.tenants_json_path)
         self.transfers = Transfer.from_json_file(self.parameters.transfers_json_path)
         self.bills = Bill.from_json_file(self.parameters.bills_json_path)
+        self.blacklisted_tenants = BlacklistedTenant.from_json_file(self.parameters.blacklisted_tenants_json_path)
 
     def check_tenants_apartment_keys(self) -> bool:
         for tenant in self.tenants.values():
@@ -107,6 +109,12 @@ class Manager:
         total_income = sum([transfer.amount_pln for transfer in self.transfers if transfer.settlement_year == year])
         total_due = sum([bill.amount_pln for bill in self.bills if bill.settlement_year == year])
         return total_income - total_due
+    
+    def is_tenant_blacklisted(self, tenant_name: str) -> Tuple[bool, str | None]:
+        blacklisted_entry = next((entry for entry in self.blacklisted_tenants if entry.name == tenant_name), None)
+        if blacklisted_entry is None:
+            return False, None
+        return True, blacklisted_entry.reason
     
     def has_any_bills(self, apartment_key: str, year: int, month: int) -> bool:
         if month < 1 or month > 12:

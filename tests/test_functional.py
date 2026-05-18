@@ -112,3 +112,18 @@ def test_validation_of_edge_values():
 
     assert manager.validate_transfer_amount(transfer_at_min) == []
     assert manager.validate_transfer_amount(transfer_at_max) == []
+
+def test_is_tenant_blacklisted():
+    manager = Manager(Parameters())
+    
+    is_blacklisted, reason = manager.is_tenant_blacklisted("Marek Złodziej")
+    assert is_blacklisted is True
+    assert reason == "Niezapłacone rachunki na kwotę 50000 PLN"
+    
+    is_blacklisted, reason = manager.is_tenant_blacklisted("Jan Nowak")
+    assert is_blacklisted is False
+    assert reason is None
+    
+    is_blacklisted, reason = manager.is_tenant_blacklisted("Nieznany Najemca")
+    assert is_blacklisted is False
+    assert reason is None
