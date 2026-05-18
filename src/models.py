@@ -9,6 +9,7 @@ class Parameters(BaseModel):
     tenants_json_path: str = 'data/tenants.json'
     transfers_json_path: str = 'data/transfers.json'
     bills_json_path: str = 'data/bills.json'
+    blacklisted_tenants_json_path: str = 'data/blacklisted_tenants.json'
 
 
 class Room(BaseModel):
@@ -26,7 +27,7 @@ class Apartment(BaseModel):
     @staticmethod
     def from_json_file(file_path: str) -> Dict[str,'Apartment']:
         data = None
-        with open(file_path, 'r') as file:
+        with open(file_path, 'r', encoding='utf-8') as file:
             data = json.load(file)
         assert isinstance(data, dict), "Expected a dictionary of apartments"
         return {key: Apartment(**apartment) for key, apartment in data.items()}
@@ -44,7 +45,7 @@ class Tenant(BaseModel):
     @staticmethod
     def from_json_file(file_path: str) -> Dict[str,'Tenant']:
         data = None
-        with open(file_path, 'r') as file:
+        with open(file_path, 'r', encoding='utf-8') as file:
             data = json.load(file)
         assert isinstance(data, dict), "Expected a dictionary of tenants"
         return {key: Tenant(**tenant) for key, tenant in data.items()}
@@ -61,7 +62,7 @@ class Transfer(BaseModel):
     @staticmethod
     def from_json_file(file_path: str) -> List['Transfer']:
         data = None
-        with open(file_path, 'r') as file:
+        with open(file_path, 'r', encoding='utf-8') as file:
             data = json.load(file)
         assert isinstance(data, list), "Expected a list of transfers"
         return [Transfer(**transfer) for transfer in data]
@@ -78,10 +79,23 @@ class Bill(BaseModel):
     @staticmethod
     def from_json_file(file_path: str) -> List['Bill']:
         data = None
-        with open(file_path, 'r') as file:
+        with open(file_path, 'r', encoding='utf-8') as file:
             data = json.load(file)
         assert isinstance(data, list), "Expected a list of bills"
         return [Bill(**bill) for bill in data]
+
+
+class BlacklistedTenant(BaseModel):
+    name: str
+    reason: str
+
+    @staticmethod
+    def from_json_file(file_path: str) -> List['BlacklistedTenant']:
+        data = None
+        with open(file_path, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+        assert isinstance(data, list), "Expected a list of blacklisted tenants"
+        return [BlacklistedTenant(**entry) for entry in data]
 
 
 class ApartmentSettlement(BaseModel):
