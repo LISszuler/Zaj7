@@ -4,6 +4,7 @@ from src.manager import Manager
 
 def test_validate_transfers_reports_unknown_tenant():
     manager = Manager(Parameters())
+    manager.transfers = [] 
     manager.transfers.append(Transfer(
         tenant='tenant-999',
         date='2024-06-01',
@@ -22,6 +23,7 @@ def test_validate_transfers_reports_unknown_tenant():
 
 def test_validate_transfers_reports_transfer_outside_tenant_agreement():
     manager = Manager(Parameters())
+    manager.transfers = [] 
     manager.transfers.append(Transfer(
         tenant='tenant-1',
         date='2025-01-01',
@@ -40,6 +42,7 @@ def test_validate_transfers_reports_transfer_outside_tenant_agreement():
 
 def test_validate_transfers_returns_no_errors_for_valid_transfer():
     manager = Manager(Parameters())
+    manager.transfers = [] 
     manager.transfers.append(Transfer(
         tenant='tenant-1',
         date='2024-06-01',

@@ -1,3 +1,5 @@
+from xml.parsers.expat import errors
+from datetime import datetime
 from src.models import Apartment, Bill, Parameters, Tenant, TenantSettlement, Transfer, ApartmentSettlement
 from typing import List, Tuple
 
@@ -112,3 +114,28 @@ class Manager:
         if apartment_key not in self.apartments:
             raise ValueError("Apartment key does not exist")
         return any([bill for bill in self.bills if bill.apartment == apartment_key and bill.settlement_year == year and bill.settlement_month == month])
+    
+    def validate_transfers(self) -> List[str]:
+        errors = []
+    
+        for transfer in self.transfers:
+       
+            if transfer.tenant not in self.tenants:
+                errors.append(f"Transfer for unknown tenant: {transfer.tenant}")
+                continue
+        
+            tenant = self.tenants[transfer.tenant]
+            
+            
+            transfer_date = datetime.strptime(transfer.date, '%Y-%m-%d').date()
+            agreement_from = datetime.strptime(tenant.date_agreement_from, '%Y-%m-%d').date()
+            agreement_to = datetime.strptime(tenant.date_agreement_to, '%Y-%m-%d').date()
+                
+                
+            if transfer_date < agreement_from or transfer_date > agreement_to:
+                    errors.append(f"Transfer for tenant {transfer.tenant} is outside agreement period: {tenant.date_agreement_from} - {tenant.date_agreement_to}")
+            
+        return errors
+    
+  
+
