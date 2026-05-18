@@ -9,6 +9,8 @@ class Manager:
         self.tenants = {}
         self.transfers = []
         self.bills = []
+        self.transfer_min_pln = -10000.0
+        self.transfer_max_pln = 10000.0
         self.blacklisted_tenants = []
        
         self.load_data()
@@ -120,3 +122,9 @@ class Manager:
         if apartment_key not in self.apartments:
             raise ValueError("Apartment key does not exist")
         return any([bill for bill in self.bills if bill.apartment == apartment_key and bill.settlement_year == year and bill.settlement_month == month])
+    
+    def validate_transfer_amount(self, transfer: Transfer) -> list:
+        errors = []
+        if transfer.amount_pln < self.transfer_min_pln or transfer.amount_pln > self.transfer_max_pln:
+            errors.append(f"Transfer amount {transfer.amount_pln} is outside allowed range [{self.transfer_min_pln}, {self.transfer_max_pln}]")
+        return errors
