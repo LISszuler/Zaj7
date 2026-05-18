@@ -85,3 +85,20 @@ def test_apartment_has_any_bills():
 
     has_bills = manager.has_any_bills('apart-polanka', 2025, 3)
     assert has_bills == False
+
+
+
+def test_is_tenant_blacklisted():
+    manager = Manager(Parameters())
+    
+    is_blacklisted, reason = manager.is_tenant_blacklisted("Marek Złodziej")
+    assert is_blacklisted is True
+    assert reason == "Niezapłacone rachunki na kwotę 50000 PLN"
+    
+    is_blacklisted, reason = manager.is_tenant_blacklisted("Jan Nowak")
+    assert is_blacklisted is False
+    assert reason is None
+    
+    is_blacklisted, reason = manager.is_tenant_blacklisted("Nieznany Najemca")
+    assert is_blacklisted is False
+    assert reason is None
