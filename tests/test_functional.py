@@ -85,3 +85,30 @@ def test_apartment_has_any_bills():
 
     has_bills = manager.has_any_bills('apart-polanka', 2025, 3)
     assert has_bills == False
+
+
+def test_validation_of_edge_values():
+    manager = Manager(Parameters())
+    manager.transfer_min_pln = -5000.0
+    manager.transfer_max_pln = 10000.0
+
+    transfer_at_min = Transfer(
+        tenant='tenant-1',
+        date='2025-01-01',
+        settlement_year=2025,
+        settlement_month=1,
+        amount_pln=-5000.0,
+        type='refund'
+    )
+
+    transfer_at_max = Transfer(
+        tenant='tenant-2',
+        date='2025-01-02',
+        settlement_year=2025,
+        settlement_month=1,
+        amount_pln=10000.0,
+        type='payment'
+    )
+
+    assert manager.validate_transfer_amount(transfer_at_min) == []
+    assert manager.validate_transfer_amount(transfer_at_max) == []
